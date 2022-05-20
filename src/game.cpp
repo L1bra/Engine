@@ -7,7 +7,7 @@ Game::Game()
     window(new Window("JRPG", 640, 480, em))
 {
     shader = ResourceManager::load_shader("../../src/vertex.vs", "../../src/fragment.fs", nullptr, "sprite");
-    renderer = new Renderer(shader);
+    renderer = new Renderer(*shader);
 }
 
 Game::~Game()
