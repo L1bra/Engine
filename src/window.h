@@ -8,7 +8,6 @@
 #include "events/mouse_event.h"
 #include "events/key_event.h"
 
-#include "input_handler.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -36,8 +35,9 @@ public:
     ~Window();
 
     void init(const std::string& name, uint16_t width, uint16_t height);
+    GLFWwindow* get_window() { return glfw_window; }
 
-    void update();
+    void update(float dt);
     void render(Renderer& renderer);
 
     bool is_open() const;

@@ -27,7 +27,6 @@ Window::~Window()
     // em = 0;
 }
 
-//TODO: refactor this
 void Window::init(const std::string& name, uint16_t width, uint16_t height)
 {    
     // setup systems
@@ -75,7 +74,7 @@ void Window::init(const std::string& name, uint16_t width, uint16_t height)
     glfwSetWindowCloseCallback(glfw_window, window_closed_callback);
 }
 
-void Window::update()
+void Window::update(float dt)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -126,28 +125,30 @@ void Window::mouse_scrolled_callback(GLFWwindow* window, double x, double y)
 
 void Window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
+    auto& handle = *(Window*)glfwGetWindowUserPointer(window);
     if(action == GLFW_PRESS)
     {
-        auto& handle = *(Window*)glfwGetWindowUserPointer(window);
         handle.em->queue_event(std::shared_ptr<IEvent>(new MouseButtonPressedEvent(button)));
     }
-    else
+    else if(action == GLFW_RELEASE)
     {
-        auto& handle = *(Window*)glfwGetWindowUserPointer(window);
         handle.em->queue_event(std::shared_ptr<IEvent>(new MouseButtonReleasedEvent(button)));
     }
 }
 
 void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if(action == GLFW_PRESS)
+    auto& handle = *(Window*)glfwGetWindowUserPointer(window);
+    switch(action)
     {
-        auto& handle = *(Window*)glfwGetWindowUserPointer(window);
-        handle.em->queue_event(std::shared_ptr<IEvent>(new KeyPressedEvent(key)));
-    }
-    else
-    {
-        auto& handle = *(Window*)glfwGetWindowUserPointer(window);
-        handle.em->queue_event(std::shared_ptr<IEvent>(new KeyReleasedEvent(key)));
+        case GLFW_PRESS:
+        {
+            handle.em->queue_event(std::shared_ptr<IEvent>(new KeyPressedEvent(key, scancode, action, mods)));
+        } break;
+
+        case GLFW_RELEASE:
+        {
+            handle.em->queue_event(std::shared_ptr<IEvent>(new KeyReleasedEvent(key, scancode, action, mods)));
+        } break;
     }
 }

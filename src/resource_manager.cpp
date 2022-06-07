@@ -95,8 +95,6 @@ Texture2D* ResourceManager::load_texture_from_file(const char* file, bool alpha)
     int height;
     int channels;
     unsigned char* data = stbi_load(file, &width, &height, &channels, 0);
-    if(!data)
-        printf("data is nullptr\n");
 
     texture->generate(width, height, data);
 

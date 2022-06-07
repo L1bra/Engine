@@ -1,6 +1,7 @@
 #pragma once
 
 #include "window.h"
+#include "input_handler.h"
 #include "events/event_manager.h"
 
 
@@ -13,16 +14,19 @@ private:
 
     Shader* shader;
     Renderer* renderer;
+    InputHandler* input_handler;
 public:
     Game();
     ~Game();
-
+    
+    // load game stuff and init systems
     void init();
-    void start();
 
+    // main loop
     void main_loop();
 
+    // input -> update -> render
     void input();
-    void update();
+    void update(float dt);
     void render();
 };

@@ -49,7 +49,6 @@ void EventManager::process_events()
     auto it = m_event_queue.begin();
     while(it != m_event_queue.end())
     {
-        // printf("Processing event..\n");
 
         auto listeners = m_event_listeners.find((*it)->get_id());
         if (listeners != m_event_listeners.end())

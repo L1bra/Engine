@@ -17,26 +17,28 @@ private:
 public:
 
     ~EventManager() {};
-    //! Adds a listener to the event. The listener should invalidate itself when it needs to be removed. 
+    // Adds a listener to the event. The listener should invalidate itself when it needs to be removed. 
     virtual bool add_listener(IEvent::id_t id, EventDelegate proc) override;
 
-    //! Removes the specified delegate from the list
+    // Removes the specified delegate from the list
     virtual bool remove_listener(IEvent::id_t id, EventDelegate proc) override;
 
-    //! Queues an event to be processed during the next update
+    // Queues an event to be processed during the next update
     virtual void queue_event(std::shared_ptr<IEvent> ev) override;
 
-    //! Processes all events
+    // Processes all events
     virtual void process_events() override;
 };
 
-//! Helper class that automatically handles removal of individual event listeners registered using OnEvent() member function upon destruction of an object derived from this class. 
-class EventListener 
+
+/*  Helper class that automatically handles removal of individual event listeners 
+    registered using OnEvent() member function upon destruction of an object derived from this class. */ 
+class EventListener
 {
 private:
-    typedef std::pair<IEvent::id_t, EventDelegate> event_pair;
+    typedef std::pair<IEvent::id_t, EventDelegate> m_event_pair;
     std::weak_ptr<IEventManager> m_event_manager;
-    std::vector<event_pair> m_local_events;
+    std::vector<m_event_pair> m_local_events;
     //std::vector<_DynEvPair> mDynamicLocalEvents; 
 protected:
     EventListener(std::weak_ptr<IEventManager> mgr) 
@@ -61,13 +63,13 @@ protected:
         auto em = m_event_manager.lock();
         if (em->add_listener(id, proc))
         {
-            m_local_events.push_back(event_pair(id, proc));
+            m_local_events.push_back(m_event_pair(id, proc));
         }
 
         return true;
     }
 public:
-    //! Template function that also converts the event into the right data type before calling the event listener. 
+    // Template function that also converts the event into the right data type before calling the event listener. 
     template<class T>
     bool on_event(std::function<void(std::shared_ptr<T>)> proc)
     {

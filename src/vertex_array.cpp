@@ -31,12 +31,12 @@ void VertexArray::add_index_buffer(const IndexBuffer& ib)
     //
 }
 
-const std::vector<const VertexBuffer*>& get_vertex_buffers() const
-{
-    //
-}
+// const std::vector<const VertexBuffer*>& get_vertex_buffers() const
+// {
+//     //
+// }
 
-const IndexBuffer& get_index_buffer() const
-{
-    //
-}
+// const IndexBuffer& get_index_buffer() const
+// {
+//     //
+// }
