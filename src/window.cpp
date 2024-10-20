@@ -1,126 +1,134 @@
 #include "window.h"
 
-// std::shared_ptr<IEventManager> Window::em;
+#include "Platform/OpenGL/OpenGLContext.h"
 
-Window::Window(std::shared_ptr<IEventManager> event_manager)
+#include <cassert>
+
+
+Window::Window(std::shared_ptr<IEventManager> EventManager)
     :
-    name("title"),
-    width(640),
-    height(480),
-    em(event_manager)
+    EventListener(EventManager),
+    m_EventManager(EventManager),
+    m_Name("title"),
+    m_Width(640),
+    m_Height(480)
+    //m_Renderer(std::make_shared<Renderer>())
 {
-    init("title", 640, 480);
+    Init("title", 640, 480);
 }
 
-Window::Window(const std::string& name, uint16_t width, uint16_t height, std::shared_ptr<IEventManager> event_manager)
+Window::Window(const std::string& name, uint16_t width, uint16_t height, std::shared_ptr<IEventManager> EventManager)
     :
-    name(name),
-    width(width),
-    height(height),
-    em(event_manager)
+    EventListener(EventManager),
+    m_EventManager(EventManager),
+    m_Name(name),
+    m_Width(width),
+    m_Height(height)
+    //m_Renderer(std::make_shared<Renderer>())
 {
-    init(name, width, height);
+    Init(name, width, height);
 }
 
 Window::~Window()
 {
-    // em = 0;
 }
 
-void Window::init(const std::string& name, uint16_t width, uint16_t height)
+void Window::Init(const std::string& name, uint16_t width, uint16_t height)
 {    
     // setup systems
-    if(!em)
-    {
-        return;
-    }
-    
+    assert(this->m_EventManager);
+
     // setup window
-    this->name = name;
-    this->width = width;
-    this->height = height;
+    this->m_Name = name;
+    this->m_Width = width;
+    this->m_Height = height;
 
     if(!glfwInit())
     {
         printf("ERROR: glfwInit() failed!\n");
-        close();
+        Close();
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    glfw_window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
-    if(!glfw_window)
+    m_GLFW_Window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
+    if(!m_GLFW_Window)
     {
         printf("ERROR: glfwCreateWindow() failed!\n");
-        close();
+        Close();
     }
 
-    glfwMakeContextCurrent(glfw_window);
+    m_GraphicsContext = new OpenGLContext(m_GLFW_Window);
+    m_GraphicsContext->Init();
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        printf("ERROR: Failed to init GLAD!\n");
-        close();
-    }
+    m_Renderer = std::make_shared<Renderer>();
 
-    glfwSetWindowUserPointer(glfw_window, this);
-    glfwSetCursorPosCallback(glfw_window, mouse_moved_callback);
-    glfwSetScrollCallback(glfw_window, mouse_scrolled_callback);
-    glfwSetMouseButtonCallback(glfw_window, mouse_button_callback);
-    glfwSetKeyCallback(glfw_window, key_callback);
-    glfwSetWindowSizeCallback(glfw_window, window_resized_callback);
-    glfwSetWindowCloseCallback(glfw_window, window_closed_callback);
+    glfwSetWindowUserPointer(m_GLFW_Window, this);
+    glfwSetCursorPosCallback(m_GLFW_Window, mouse_moved_callback);
+    glfwSetScrollCallback(m_GLFW_Window, mouse_scrolled_callback);
+    glfwSetMouseButtonCallback(m_GLFW_Window, mouse_button_callback);
+    glfwSetKeyCallback(m_GLFW_Window, key_callback);
+    glfwSetWindowSizeCallback(m_GLFW_Window, window_resized_callback);
+    glfwSetWindowCloseCallback(m_GLFW_Window, window_closed_callback);
+    glfwSetWindowRefreshCallback(m_GLFW_Window, window_refresh_callback);
+    glfwSetFramebufferSizeCallback(m_GLFW_Window, framebuffer_size_callback);
 }
 
-void Window::update(float dt)
+void Window::Update(float dt)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    m_EventManager->process_events();
     glfwPollEvents();
-    em->process_events();
 }
 
-void Window::render(Renderer& renderer)
+void Window::Render()
 {
-    renderer.draw_sprite(glm::vec2(0.5f, 0.0f));
-    glfwSwapBuffers(glfw_window);
+    this->m_Renderer->DrawSprite(glm::vec2(0.5f, 0.0f));
+    this->m_GraphicsContext->SwapBuffers();
 }
 
-bool Window::is_open() const
+void Window::Render(Renderer& renderer)
 {
-    return !glfwWindowShouldClose(glfw_window);
+    renderer.DrawSprite(glm::vec2(0.5f, 0.0f));
+    this->m_GraphicsContext->SwapBuffers();
 }
 
-void Window::close()
+bool Window::IsOpen() const
 {
-    glfwDestroyWindow(glfw_window);
+    return !glfwWindowShouldClose(m_GLFW_Window);
+}
+
+void Window::Close()
+{
+    glfwDestroyWindow(m_GLFW_Window);
 }
 
 void Window::window_resized_callback(GLFWwindow* window, int width, int height)
 {
     auto& handle = *(Window*)glfwGetWindowUserPointer(window);
-    handle.em->queue_event(std::shared_ptr<IEvent>(new WindowResizedEvent(width, height)));
+    handle.m_EventManager->queue_event(std::shared_ptr<IEvent>(new WindowResizeEvent(width, height)));
 }
 
 void Window::window_closed_callback(GLFWwindow* window)
 {
     auto& handle = *(Window*)glfwGetWindowUserPointer(window);
-    handle.em->queue_event(std::shared_ptr<IEvent>(new WindowClosedEvent()));
+    handle.m_EventManager->queue_event(std::shared_ptr<IEvent>(new WindowCloseEvent()));
 }
 
 void Window::mouse_moved_callback(GLFWwindow* window, double x, double y)
 {
     auto& handle = *(Window*)glfwGetWindowUserPointer(window);
-    handle.em->queue_event(std::shared_ptr<IEvent>(new MouseMovedEvent(x, y)));
+    handle.m_EventManager->queue_event(std::shared_ptr<IEvent>(new MouseMovedEvent(x, y)));
 }
 
 void Window::mouse_scrolled_callback(GLFWwindow* window, double x, double y)
 {
     auto& handle = *(Window*)glfwGetWindowUserPointer(window);
-    handle.em->queue_event(std::shared_ptr<IEvent>(new MouseScrolledEvent(x, y)));
+    handle.m_EventManager->queue_event(std::shared_ptr<IEvent>(new MouseScrolledEvent(x, y)));
 }
 
 void Window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -128,11 +136,11 @@ void Window::mouse_button_callback(GLFWwindow* window, int button, int action, i
     auto& handle = *(Window*)glfwGetWindowUserPointer(window);
     if(action == GLFW_PRESS)
     {
-        handle.em->queue_event(std::shared_ptr<IEvent>(new MouseButtonPressedEvent(button)));
+        handle.m_EventManager->queue_event(std::shared_ptr<IEvent>(new MouseButtonPressedEvent(button)));
     }
     else if(action == GLFW_RELEASE)
     {
-        handle.em->queue_event(std::shared_ptr<IEvent>(new MouseButtonReleasedEvent(button)));
+        handle.m_EventManager->queue_event(std::shared_ptr<IEvent>(new MouseButtonReleasedEvent(button)));
     }
 }
 
@@ -143,12 +151,27 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
     {
         case GLFW_PRESS:
         {
-            handle.em->queue_event(std::shared_ptr<IEvent>(new KeyPressedEvent(key, scancode, action, mods)));
+            handle.m_EventManager->queue_event(std::shared_ptr<IEvent>(new KeyPressedEvent(key, scancode, action, mods)));
         } break;
 
         case GLFW_RELEASE:
         {
-            handle.em->queue_event(std::shared_ptr<IEvent>(new KeyReleasedEvent(key, scancode, action, mods)));
+            handle.m_EventManager->queue_event(std::shared_ptr<IEvent>(new KeyReleasedEvent(key, scancode, action, mods)));
         } break;
     }
+}
+
+void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+void Window::window_refresh_callback(GLFWwindow* window)
+{
+    auto& handle = *(Window*)glfwGetWindowUserPointer(window);
+    handle.Render();
+
+    //glClear(GL_COLOR_BUFFER_BIT);
+    glfwSwapBuffers(window);
+    glFinish();
 }

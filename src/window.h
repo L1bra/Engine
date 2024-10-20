@@ -1,47 +1,43 @@
 #pragma once
 
 #include "resource_manager.h"
-#include "renderer.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/GraphicsContext.h"
 
 #include "events/event_manager.h"
 #include "events/window_event.h"
 #include "events/mouse_event.h"
 #include "events/key_event.h"
 
-
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
 #include <memory>
 
 
-class Window final
-{
-private:
-    std::string name;
-    uint16_t width;
-    uint16_t height;
+class Renderer;
 
-    GLFWwindow* glfw_window;
-    
-    std::shared_ptr<IEventManager> em;
+
+class Window : public EventListener
+{
 public:
+    Window(std::shared_ptr<IEventManager> EventManager);
+    Window(const std::string& name, uint16_t width, uint16_t height, std::shared_ptr<IEventManager> EventManager);
+    ~Window();
+
     Window(const Window&) = delete;
     Window& operator=(const Window&) = delete;
 
-    Window(std::shared_ptr<IEventManager> event_manager);
-    Window(const std::string& name, uint16_t width, uint16_t height, std::shared_ptr<IEventManager> event_manager);
-    ~Window();
+    void Init(const std::string& name, uint16_t width, uint16_t height);
 
-    void init(const std::string& name, uint16_t width, uint16_t height);
-    GLFWwindow* get_window() { return glfw_window; }
 
-    void update(float dt);
-    void render(Renderer& renderer);
+    void Update(float dt);
+    void Render();
+    void Render(Renderer& renderer);
 
-    bool is_open() const;
-    void close();
+    bool IsOpen() const;
+    void Close();
+    GLFWwindow* GetWindow() { return m_GLFW_Window; }
 
     static void window_resized_callback(GLFWwindow* window, int width, int height);
     static void window_closed_callback(GLFWwindow* window);
@@ -49,4 +45,16 @@ public:
     static void mouse_scrolled_callback(GLFWwindow* window, double x, double y);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    static void window_refresh_callback(GLFWwindow* window);
+private:
+    std::string m_Name;
+    uint16_t m_Width;
+    uint16_t m_Height;
+
+    std::shared_ptr<Renderer> m_Renderer;
+    GraphicsContext* m_GraphicsContext;
+    GLFWwindow* m_GLFW_Window;
+    
+    std::shared_ptr<IEventManager> m_EventManager;
 };

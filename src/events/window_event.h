@@ -4,37 +4,48 @@
 
 
 
-class WindowResizedEvent : public IEvent
+class WindowResizeEvent : public IEvent
 {
 private:
-    int width;
-    int height;
+    int m_Width;
+    int m_Height;
 public:
-    DECLARE_EVENT(WindowResizedEvent);
+    DECLARE_EVENT(WindowResizeEvent);
     
-    WindowResizedEvent(int width, int height)
+    WindowResizeEvent(int width, int height)
         :
-        width(width),
-        height(height)
+        m_Width(width),
+        m_Height(height)
+    {
+        printf("Resize event -> width: %d height: %d\n", width, height);
+    }
+
+    ~WindowResizeEvent()
     {
     }
 
-    ~WindowResizedEvent()
+    int GetWidth()
     {
+        return m_Width;
+    }
+
+    int GetHeight()
+    {
+        return m_Height;
     }
 };
 
 
-class WindowClosedEvent: public IEvent
+class WindowCloseEvent: public IEvent
 {
 public:
-    DECLARE_EVENT(WindowClosedEvent);
+    DECLARE_EVENT(WindowCloseEvent);
 
-    WindowClosedEvent()
+    WindowCloseEvent()
     {
 
     };
-    ~WindowClosedEvent()
+    ~WindowCloseEvent()
     {
     };
 };

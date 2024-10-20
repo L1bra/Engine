@@ -20,7 +20,7 @@ struct IVertexArray
 
 struct VertexArray : public IVertexArray
 {
-    unsigned int m_id;
+    unsigned int m_id = 0;
 public:
     VertexArray();
     ~VertexArray();

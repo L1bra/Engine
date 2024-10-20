@@ -24,7 +24,7 @@ public:
     virtual bool remove_listener(IEvent::id_t id, EventDelegate proc) override;
 
     // Queues an event to be processed during the next update
-    virtual void queue_event(std::shared_ptr<IEvent> ev) override;
+    virtual void queue_event(IEventPtr ev) override;
 
     // Processes all events
     virtual void process_events() override;
@@ -36,22 +36,23 @@ public:
 class EventListener
 {
 private:
-    typedef std::pair<IEvent::id_t, EventDelegate> m_event_pair;
-    std::weak_ptr<IEventManager> m_event_manager;
-    std::vector<m_event_pair> m_local_events;
+    typedef std::pair<IEvent::id_t, EventDelegate> m_EventPair;
+    std::vector<m_EventPair> m_LocalEvents;
     //std::vector<_DynEvPair> mDynamicLocalEvents; 
+protected:
+    std::weak_ptr<IEventManager> m_EventManager;
 protected:
     EventListener(std::weak_ptr<IEventManager> mgr) 
         :
-        m_event_manager(mgr) 
+        m_EventManager(mgr)
     {
     }
     
     virtual ~EventListener()
     {
-        if (m_event_manager.expired()) return;
-        auto em = m_event_manager.lock();
-        for (auto i : m_local_events)
+        if (m_EventManager.expired()) return;
+        auto em = m_EventManager.lock();
+        for (auto i : m_LocalEvents)
         {
             em->remove_listener(i.first, i.second);
         }
@@ -59,11 +60,11 @@ protected:
 
     bool on_event(IEvent::id_t id, EventDelegate proc)
     {
-        if (m_event_manager.expired()) return false;
-        auto em = m_event_manager.lock();
+        if (m_EventManager.expired()) return false;
+        auto em = m_EventManager.lock();
         if (em->add_listener(id, proc))
         {
-            m_local_events.push_back(m_event_pair(id, proc));
+            m_LocalEvents.push_back(m_EventPair(id, proc));
         }
 
         return true;
