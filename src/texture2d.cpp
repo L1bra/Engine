@@ -1,4 +1,4 @@
-#include "texture2d.h"
+#include "Texture2d.h"
 
 
 Texture2D::Texture2D()

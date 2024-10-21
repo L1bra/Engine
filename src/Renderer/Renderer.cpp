@@ -1,5 +1,5 @@
-#include "renderer.h"
-#include "resource_manager.h"
+#include "Renderer.h"
+#include "ResourceManager.h"
 
 Renderer::Renderer()
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "buffer.h"
-#include "vertex_array.h"
-#include "shader.h"
-#include "texture2d.h"
+#include "Buffer.h"
+#include "VertexArray.h"
+#include "Shader.h"
+#include "Texture2d.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

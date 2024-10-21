@@ -1,4 +1,4 @@
-#include "bitmask.h"
+#include "Bitmask.h"
 
 Bitmask::Bitmask()
     :

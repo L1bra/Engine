@@ -1,4 +1,4 @@
-#include "window.h"
+#include "Window.h"
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
@@ -8,11 +8,11 @@
 Window::Window(std::shared_ptr<IEventManager> EventManager)
     :
     EventListener(EventManager),
-    m_EventManager(EventManager),
     m_Name("title"),
     m_Width(640),
-    m_Height(480)
-    //m_Renderer(std::make_shared<Renderer>())
+    m_Height(480),
+    m_EventManager(EventManager),
+    m_Input_handler(std::make_unique<InputHandler>(this->m_EventManager))
 {
     Init("title", 640, 480);
 }
@@ -20,11 +20,11 @@ Window::Window(std::shared_ptr<IEventManager> EventManager)
 Window::Window(const std::string& name, uint16_t width, uint16_t height, std::shared_ptr<IEventManager> EventManager)
     :
     EventListener(EventManager),
-    m_EventManager(EventManager),
     m_Name(name),
     m_Width(width),
-    m_Height(height)
-    //m_Renderer(std::make_shared<Renderer>())
+    m_Height(height),
+    m_EventManager(EventManager),
+    m_Input_handler(std::make_unique<InputHandler>(this->m_EventManager))
 {
     Init(name, width, height);
 }
@@ -37,6 +37,7 @@ void Window::Init(const std::string& name, uint16_t width, uint16_t height)
 {    
     // setup systems
     assert(this->m_EventManager);
+    assert(this->m_Input_handler);
 
     // setup window
     this->m_Name = name;
@@ -63,7 +64,7 @@ void Window::Init(const std::string& name, uint16_t width, uint16_t height)
     m_GraphicsContext = new OpenGLContext(m_GLFW_Window);
     m_GraphicsContext->Init();
 
-    m_Renderer = std::make_shared<Renderer>();
+    m_Renderer = std::make_shared<Renderer>(); // TODO: Rendering Context
 
     glfwSetWindowUserPointer(m_GLFW_Window, this);
     glfwSetCursorPosCallback(m_GLFW_Window, mouse_moved_callback);
@@ -76,10 +77,22 @@ void Window::Init(const std::string& name, uint16_t width, uint16_t height)
     glfwSetFramebufferSizeCallback(m_GLFW_Window, framebuffer_size_callback);
 }
 
+void Window::Input()
+{
+    if (m_Input_handler->is_key_down(InputHandler::Key::ENTER)) printf("Enter is pressed!\n");
+    if (m_Input_handler->is_key_down(InputHandler::Key::ESC)) printf("ESC is pressed!\n");
+    if (m_Input_handler->is_key_pressed(InputHandler::Key::W)) printf("W is pressed!\n");
+    if (m_Input_handler->is_key_pressed(InputHandler::Key::A)) printf("A is pressed!\n");
+    if (m_Input_handler->is_key_pressed(InputHandler::Key::S)) printf("S is pressed!\n");
+    if (m_Input_handler->is_key_pressed(InputHandler::Key::D)) printf("D is pressed!\n");
+}
+
 void Window::Update(float dt)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    m_Input_handler->update();
 
     m_EventManager->process_events();
     glfwPollEvents();

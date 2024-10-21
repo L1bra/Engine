@@ -1,13 +1,14 @@
 #pragma once
 
-#include "resource_manager.h"
+#include "ResourceManager.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/GraphicsContext.h"
+#include "InputHandler.h"
 
-#include "events/event_manager.h"
-#include "events/window_event.h"
-#include "events/mouse_event.h"
-#include "events/key_event.h"
+#include "Events/EventManager.h"
+#include "Events/WindowEvent.h"
+#include "Events/MouseEvent.h"
+#include "Events/KeyEvent.h"
 
 #include <GLFW/glfw3.h>
 
@@ -30,7 +31,7 @@ public:
 
     void Init(const std::string& name, uint16_t width, uint16_t height);
 
-
+    void Input();
     void Update(float dt);
     void Render();
     void Render(Renderer& renderer);
@@ -52,9 +53,10 @@ private:
     uint16_t m_Width;
     uint16_t m_Height;
 
-    std::shared_ptr<Renderer> m_Renderer;
-    GraphicsContext* m_GraphicsContext;
-    GLFWwindow* m_GLFW_Window;
-    
     std::shared_ptr<IEventManager> m_EventManager;
+    std::unique_ptr<InputHandler> m_Input_handler;
+
+    GLFWwindow* m_GLFW_Window;
+    GraphicsContext* m_GraphicsContext;
+    std::shared_ptr<Renderer> m_Renderer;
 };
