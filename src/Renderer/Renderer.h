@@ -23,8 +23,8 @@ public:
 private:
     void InitData();
 private:
-    std::shared_ptr<Shader> shader;
+    std::shared_ptr<Shader> m_Shader;
     std::unique_ptr<VertexBuffer> m_VBO;
     std::unique_ptr<IndexBuffer> m_IBO;
-    VertexArray vao;
+    VertexArray m_VAO;
 };

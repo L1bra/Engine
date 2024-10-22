@@ -36,7 +36,7 @@ namespace Global
         ResourceManager();
         ~ResourceManager();
     private:
-        std::shared_ptr<Shader> LoadShaderFromFile(const char* v_shader_file, const char* f_shader_file, const char* g_shader_file = nullptr);
+        std::shared_ptr<Shader> LoadShaderFromFile(const char* v_shader_file, const char* f_shader_file, const char* g_shader_file);
         std::shared_ptr<Texture2D> LoadTextureFromFile(const char* file, bool alpha);
     private:
         // storage

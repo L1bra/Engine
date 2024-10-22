@@ -38,7 +38,8 @@ namespace Global
         return *s_Instance;
     }
 
-    std::shared_ptr<Shader> Global::ResourceManager::LoadShader(const char* v_shader_file, const char* f_shader_file, const char* g_shader_file, const std::string& name)
+
+    std::shared_ptr<Shader> ResourceManager::LoadShader(const char* v_shader_file, const char* f_shader_file, const char* g_shader_file, const std::string& name)
     {
         std::shared_ptr<Shader> shader = LoadShaderFromFile(v_shader_file, f_shader_file, g_shader_file);
         m_shaders[name] = shader;

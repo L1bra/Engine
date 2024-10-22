@@ -2,9 +2,6 @@
 
 
 Application::Application()
-    :
-    m_EventManager(std::make_shared<EventManager>()),
-    m_Window(std::make_unique<Window>("JRPG", 640, 480, this->m_EventManager))
 {
     this->OnInit();
 }
@@ -17,7 +14,11 @@ Application::~Application()
 void Application::OnInit()
 {
     Global::ResourceManager::Init();
-    MainLoop();
+
+    m_EventManager = std::make_shared<EventManager>();
+    m_Window = std::make_unique<Window>("Engine", 640, 480, this->m_EventManager);
+    
+    this->MainLoop();
 }
 
 void Application::OnShutdown()
