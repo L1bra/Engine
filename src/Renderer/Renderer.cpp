@@ -1,4 +1,4 @@
-#include "Renderer.h"
+#include "Renderer/Renderer.h"
 #include "ResourceManager.h"
 
 Renderer::Renderer()
@@ -26,17 +26,17 @@ void Renderer::InitData()
     
     vao.bind();
 
-    VertexBuffer vbo(vertices, sizeof(vertices));
-    vbo.bind();
+    m_VBO.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+    m_VBO->Bind();
 
-    vbo.unbind();
+    m_VBO->Unbind();
     vao.unbind();
 }
 
 void Renderer::DrawSprite(glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color /*, Shader& shader*/)
 {
     // default shader
-    shader = Global::ResourceManager::GetInstance().LoadShader("shaders/vertex.vs", "src/shaders/fragment.fs", nullptr, "sprite");
+    shader = Global::ResourceManager::GetInstance().LoadShader("Shaders/vertex.vs", "Shaders/fragment.fs", nullptr, "sprite");
     shader->use();
     
     vao.bind();

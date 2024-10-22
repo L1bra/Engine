@@ -2,6 +2,8 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
+#include <glad/glad.h>
+
 #include <cassert>
 
 
@@ -34,7 +36,7 @@ Window::~Window()
 }
 
 void Window::Init(const std::string& name, uint16_t width, uint16_t height)
-{    
+{
     // setup systems
     assert(this->m_EventManager);
     assert(this->m_Input_handler);
@@ -44,18 +46,18 @@ void Window::Init(const std::string& name, uint16_t width, uint16_t height)
     this->m_Width = width;
     this->m_Height = height;
 
-    if(!glfwInit())
+    if (!glfwInit())
     {
         printf("ERROR: glfwInit() failed!\n");
         Close();
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     m_GLFW_Window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
-    if(!m_GLFW_Window)
+    if (!m_GLFW_Window)
     {
         printf("ERROR: glfwCreateWindow() failed!\n");
         Close();
