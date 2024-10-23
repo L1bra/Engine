@@ -8,11 +8,6 @@
 class Shader
 {
 public:
-    unsigned int m_id;
-private:
-    // ?
-    void check_compile_errors(unsigned int object, const char* type);
-public:
     Shader() = default;
     ~Shader() = default;
 
@@ -36,4 +31,8 @@ public:
     void set_vector4f(const char* name, const glm::vec4& value, bool use_shader = false);
 
     void set_matrix4(const char* name, const glm::mat4& matrix, bool use_shader = false);
+private:
+    void check_compile_errors(unsigned int object, const char* type);
+public:
+    unsigned int m_id;
 };

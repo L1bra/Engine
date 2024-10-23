@@ -14,16 +14,19 @@ void Shader::compile(const char* vertexSource, const char* fragmentSource, const
     unsigned int sVertex = 0;
     unsigned int sFragment = 0;
     unsigned int gShader = 0;
+
     // vertex Shader
     sVertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(sVertex, 1, &vertexSource, NULL);
     glCompileShader(sVertex);
     check_compile_errors(sVertex, "VERTEX");
+
     // fragment Shader
     sFragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(sFragment, 1, &fragmentSource, NULL);
     glCompileShader(sFragment);
     check_compile_errors(sFragment, "FRAGMENT");
+
     // if geometry shader source code is given, also compile geometry shader
     if (geometrySource != nullptr)
     {
@@ -32,6 +35,7 @@ void Shader::compile(const char* vertexSource, const char* fragmentSource, const
         glCompileShader(gShader);
         check_compile_errors(gShader, "GEOMETRY");
     }
+
     // shader program
     m_id = glCreateProgram();
     glAttachShader(m_id, sVertex);
