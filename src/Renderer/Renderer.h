@@ -18,6 +18,8 @@ public:
 
     void DrawSprite(glm::vec2 position, glm::vec2 size = glm::vec2(10.f, 10.f), 
                         float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f)/*, Shader& shader*/);
+
+    void Draw();
 public:
     static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 private:

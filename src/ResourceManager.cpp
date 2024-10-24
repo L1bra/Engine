@@ -109,7 +109,7 @@ namespace Global
         const char* g_shader_code = geometry_code.c_str();
     
         std::shared_ptr<Shader> shader = std::make_shared<Shader>();
-        shader->compile(v_shader_code, f_shader_code, g_shader_file != nullptr ? g_shader_code : nullptr);
+        shader->Compile(v_shader_code, f_shader_code, g_shader_file != nullptr ? g_shader_code : nullptr);
         return shader;
     }
 

@@ -33,6 +33,8 @@ Window::Window(const std::string& name, uint16_t width, uint16_t height, std::sh
 
 Window::~Window()
 {
+    delete m_GraphicsContext;
+    delete m_GLFW_Window;
 }
 
 void Window::Init(const std::string& name, uint16_t width, uint16_t height)
@@ -102,13 +104,13 @@ void Window::Update(float dt)
 
 void Window::Render()
 {
-    this->m_Renderer->DrawSprite(glm::vec2(0.5f, 0.0f));
+    this->m_Renderer->Draw();
     this->m_GraphicsContext->SwapBuffers();
 }
 
 void Window::Render(Renderer& renderer)
 {
-    renderer.DrawSprite(glm::vec2(0.5f, 0.0f));
+    renderer.Draw();
     this->m_GraphicsContext->SwapBuffers();
 }
 
